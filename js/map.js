@@ -10,5 +10,6 @@ const center = [40.416775, -3.70379];
 const map = L.map('map').setView(center, 7);
 L.tileLayer(provider, { attribution }).addTo(map);
 
-var psv = d3.dsvFormat(';');
-d3.dsv(';', '/resources/airbnb-listings.csv', data => console.log(data));
+const airbnbFile =
+  'https://storage.googleapis.com/keepcoding-bootcamp/input/airbnb-listings.csv';
+d3.dsv(';', airbnbFile, data => console.log(data));
