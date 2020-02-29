@@ -10,4 +10,7 @@ const center = [40.416775, -3.70379];
 const map = L.map('map').setView(center, 7);
 L.tileLayer(provider, { attribution }).addTo(map);
 
-d3.csv('/resources/airbnb-listings.csv', rows => console.log(rows));
+var psv = d3.dsvFormat(";");
+
+psv.parse('/resources/airbnb-listings.csv')
+.then(data => console.log(data));
