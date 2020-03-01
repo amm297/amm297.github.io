@@ -13,14 +13,29 @@ body {
   }
 }
 #map {
-  width: 50%;
+  width: 100%;
   height: 100%;
 }
-@media (max-width: 400px) {
-  #map {
-    width: 100%;
-    height: 50%;
+.grid-container {
+  display: grid;
+  background-color: #2196f3;
+  padding: 0;
+  height: 100%;
+}
+@media (min-width: 400px) {
+  .grid-container {
+    grid-template-columns: 1fr 1fr;
   }
+}
+@media (max-width: 400px) {
+  .grid-container {
+    grid-template-rows: 1fr 1fr;
+  }
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  text-align: left;
 }
 .neighborhood {
   opacity: 0.6;

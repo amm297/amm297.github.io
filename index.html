@@ -9,14 +9,16 @@
     <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
-    <div id="map"></div>
-    <div id="chart">
-      <div>
-        Barrio:
-        <p id="chart-title"></p>
+    <div id="body" class="grid-container">
+      <div class="grid-item"><div id="map"></div></div>
+      <div class="grid-item">
+        <div>
+          <p>Barrio: <span id="chart-title"></span></p>
+        </div>
+        <div id="chart-data"></div>
       </div>
-      <div id="chart-data"></div>
     </div>
+
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://d3js.org/d3-dsv.v1.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet-src.js"></script>

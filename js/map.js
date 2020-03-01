@@ -61,27 +61,33 @@ d3.json(boundries).then(data => {
   map.on('moveend', onMove);
 });
 
-const updateChartTitle = tile =>
-  (document.getElementById('chart-title').innerText = tile);
+let apartments = null;
+let neighborhoodSelected = null;
+const updateChartTitle = title => {
+  const neighborhoodSelected = apartments[title];
+  console.log(neighborhoodSelected)
+  document.getElementById('chart-title').innerText = title;
+};
 
-// parseWithDelimiter('/resources/airbnb-listings.csv', Accommodation).then(
-//   data => {
-//     const grouped = groupBy(data, 'neighbourhoodCleansed');
-//     console.log(grouped);
-//     Object.keys(grouped)
-//       .map(neighborhood => {
-//         // console.log(grouped[neighborhood]);
-//         const accommodations = grouped[neighborhood];
-//         const price =
-//           accommodations
-//             .map(
-//               acmdtn =>
-//                 toNumber(acmdtn.price) +
-//                 toNumber(acmdtn.securityDeposit) +
-//                 toNumber(acmdtn.cleaningFee)
-//             )
-//             .reduce((a, b) => a + b, 0) / accommodations.length;
-//         console.log(`Precio [${neighborhood}]: ${price}`);
-//       });
-//   }
-// );
+parseWithDelimiter('/resources/airbnb-listings.csv', Accommodation).then(
+  data => {
+    const grouped = groupBy(data, 'neighbourhoodCleansed');
+    console.log(grouped);
+    apartments = grouped;
+    //   Object.keys(grouped)
+    //     .map(neighborhood => {
+    //       // console.log(grouped[neighborhood]);
+    //       const accommodations = grouped[neighborhood];
+    //       const price =
+    //         accommodations
+    //           .map(
+    //             acmdtn =>
+    //               toNumber(acmdtn.price) +
+    //               toNumber(acmdtn.securityDeposit) +
+    //               toNumber(acmdtn.cleaningFee)
+    //           )
+    //           .reduce((a, b) => a + b, 0) / accommodations.length;
+    //       console.log(`Precio [${neighborhood}]: ${price}`);
+    //     });
+  }
+);
