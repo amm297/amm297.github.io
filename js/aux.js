@@ -14,7 +14,6 @@ export const loadAccommodations = fileName => {
       Accommodation
     ).then(data => {
       const grouped = groupBy(data, 'neighbourhoodCleansed');
-      console.log(grouped);
       resolve(grouped);
     });
   });
