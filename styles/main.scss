@@ -31,7 +31,7 @@ body {
   height: 100%;
   @media (min-width: @mobilewidth) {
     & {
-      grid-template-columns: 1fr 1fr;     
+      grid-template-columns: 1fr 1fr;
     }
   }
   @media (max-width: @mobilewidth) {
@@ -50,8 +50,14 @@ body {
 .neighborhood {
   opacity: 0.6;
   stroke: #000000;
-  stroke-width: 2.5;
+  stroke-width: 1.5;
+  z-index: 300;
   &-actve {
     opacity: 0.3;
+  }
+  &-selected {
+    stroke: #f00;
+    stroke-width: 2;
+    z-index: 400;
   }
 }

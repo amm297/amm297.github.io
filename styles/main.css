@@ -40,8 +40,14 @@ body {
 .neighborhood {
   opacity: 0.6;
   stroke: #000000;
-  stroke-width: 2.5;
+  stroke-width: 1.5;
+  z-index: 300;
 }
 .neighborhood-actve {
   opacity: 0.3;
+}
+.neighborhood-selected {
+  stroke: #f00;
+  stroke-width: 2;
+  z-index: 400;
 }

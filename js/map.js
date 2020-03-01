@@ -1,7 +1,10 @@
-import Accommodation from './accommodation.js';
-import Property from './property.js';
-import { parseWithDelimiter, groupBy, toNumber } from './processor.js';
 import { color, changeOpacity } from './config.js';
+import { eventEmitter } from './events.js';
+
+import * as mapModule from './map.js';
+import { hasValue } from './processor.js';
+
+export default mapModule;
 
 const provider =
   'http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png';
@@ -12,7 +15,7 @@ const boundries = 'resources/madrid.geojson';
 const center = [40.416775, -3.70379];
 
 const map = L.map('map').setView(center, 12);
-const mapDom = document.getElementById('map');
+
 L.tileLayer(provider, { attribution }).addTo(map);
 L.svg({ clickable: true }).addTo(map);
 
@@ -21,73 +24,62 @@ const projectPoint = function(x, y) {
   this.stream.point(point.x, point.y);
 };
 
-// load layer madrid boundries
-d3.json(boundries).then(data => {
-  // L.svg({ clickable: true }).addTo(map);
+export const printMap = () => {
+  return new Promise((resolve, reject) => {
+    // load layer madrid boundries
+    d3.json(boundries).then(data => {
+      const svg = d3
+        .select('#map')
+        .select('svg')
+        .attr('pointer-events', 'auto');
 
-  const svg = d3
-    .select('#map')
-    .select('svg')
-    .attr('pointer-events', 'auto');
+      const groupMap = svg
+        .append('g')
+        .attr('id', 'map-group')
+        .attr('style', 'pointer-events:visiblePainted;');
+      const projection = d3.geoTransform({ point: projectPoint });
+      const pathCreator = d3.geoPath().projection(projection);
 
-  const groupMap = svg
-    .append('g')
-    .attr('id', 'map-group')
-    .attr('style', 'pointer-events:visiblePainted;');
-  const projection = d3.geoTransform({ point: projectPoint });
-  const pathCreator = d3.geoPath().projection(projection);
+      const neighbourhood = groupMap
+        .selectAll('path')
+        .data(data.features)
+        .enter()
+        .append('path')
+        .attr('style', 'pointer-events:visiblePainted;');
 
-  const neighbourhood = groupMap
-    .selectAll('path')
-    .data(data.features)
-    .enter()
-    .append('path')
-    .attr('style', 'pointer-events:visiblePainted;');
+      neighbourhood.on('click', (d, i, nodes) =>
+        updateChartTitle(nodes[i], d.properties.nombre)
+      );
+      neighbourhood.on('mouseover', (d, i, nodes) =>
+        changeOpacity(nodes[i], true)
+      );
+      neighbourhood.on('mouseout', (d, i, nodes) =>
+        changeOpacity(nodes[i], false)
+      );
 
-  neighbourhood.on('click', d => updateChartTitle(d.properties.nombre));
-  neighbourhood.on('mouseover', (d, i, nodes) => changeOpacity(nodes[i], true));
-  neighbourhood.on('mouseout', (d, i, nodes) => changeOpacity(nodes[i], false));
+      neighbourhood
+        .attr('d', pathCreator)
+        .attr('class', 'neighborhood')
+        .attr('fill', (d, i) => color(Math.ceil(d.properties.price) % 5));
 
-  neighbourhood
-    .attr('d', pathCreator)
-    .attr('class', 'neighborhood')
-    .attr('fill', (d, i) => color(Math.ceil(d.properties.price) % 5));
-
-  const onZoom = () => neighbourhood.attr('d', pathCreator);
-  const onMove = () => neighbourhood.attr('d', pathCreator);
-  // initialize positioning
-  onZoom();
-  map.on('zoomend', onZoom);
-  map.on('moveend', onMove);
-});
-
-let apartments = null;
-let neighborhoodSelected = null;
-const updateChartTitle = title => {
-  const neighborhoodSelected = apartments[title];
-  console.log(neighborhoodSelected)
-  document.getElementById('chart-title').innerText = title;
+      const onZoom = () => neighbourhood.attr('d', pathCreator);
+      const onMove = () => neighbourhood.attr('d', pathCreator);
+      // initialize positioning
+      onZoom();
+      map.on('zoomend', onZoom);
+      map.on('moveend', onMove);
+      resolve(true);
+    });
+  });
 };
 
-parseWithDelimiter('/resources/airbnb-listings.csv', Accommodation).then(
-  data => {
-    const grouped = groupBy(data, 'neighbourhoodCleansed');
-    console.log(grouped);
-    apartments = grouped;
-    //   Object.keys(grouped)
-    //     .map(neighborhood => {
-    //       // console.log(grouped[neighborhood]);
-    //       const accommodations = grouped[neighborhood];
-    //       const price =
-    //         accommodations
-    //           .map(
-    //             acmdtn =>
-    //               toNumber(acmdtn.price) +
-    //               toNumber(acmdtn.securityDeposit) +
-    //               toNumber(acmdtn.cleaningFee)
-    //           )
-    //           .reduce((a, b) => a + b, 0) / accommodations.length;
-    //       console.log(`Precio [${neighborhood}]: ${price}`);
-    //     });
+let lastPath = null;
+const updateChartTitle = (path, title) => {
+  eventEmitter.notify('changeNeighborhood', title);
+  if (hasValue(lastPath)) {
+    d3.select(lastPath).classed('neighborhood-selected', false);
   }
-);
+  d3.select(path).classed('neighborhood-selected', true);
+  lastPath = path;
+  document.getElementById('chart-title').innerText = title;
+};
