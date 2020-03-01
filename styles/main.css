@@ -22,3 +22,11 @@ body {
     height: 50%;
   }
 }
+.neighborhood {
+  opacity: 0.6;
+  stroke: #000000;
+  stroke-width: 2.5;
+}
+.neighborhood-actve {
+  opacity: 0.3;
+}
