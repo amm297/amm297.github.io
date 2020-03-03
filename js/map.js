@@ -1,8 +1,8 @@
 import { color, changeOpacity } from './config.js';
 import { eventEmitter } from './events.js';
+import { hasValue } from './processor.js';
 
 import * as mapModule from './map.js';
-import { hasValue } from './processor.js';
 
 export default mapModule;
 

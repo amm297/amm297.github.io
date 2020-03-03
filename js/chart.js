@@ -7,69 +7,59 @@ export const printChart = data => {
     console.log('print chart');
     console.log(data);
 
-    const pene = d3.select('#chart-data > *').remove();
-    const caca = [
-      [5, 20, 20],
-      [480, 90, 30],
-      [25, 50, 20],
-      [100, 33, 20],
-      [330, 95, 30]
-    ];
+    var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+      width = 560 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
-    const height = 500;
-    const width = 500;
-    const axisHeight = 20;
-    const radius = d3.max(caca, d => d[2]);
+    d3.select('#chart-data > *').remove();
 
-    const extentX = d3.extent(caca, d => d[0]);
-    const scaleX = d3
-      .scaleLinear()
-      .domain(extentX)
-      .range([radius + axisHeight, width - radius]);
+    const svg = d3
+      .select('#chart-data')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    const scaleY = d3
-      .scaleLinear()
-      .domain(d3.extent(caca, d => d[1]))
-      .range([height - radius - axisHeight, radius]);
+    const x = createAxisX(svg, data, width, height);
+    const y = createAxisY(svg, data, height);
 
-    const svg = d3.select('#chart-data').append('svg');
-
-    svg.attr('width', width).attr('height', height);
-
-    const group = svg
-      .selectAll('g')
-      .data(caca)
+    var u = svg
+      .selectAll('rect')
+      .data(data)
       .enter()
-      .append('g');
+      .append('rect');
 
-    group.attr('transform', d => `translate(${scaleX(d[0])}, ${scaleY(d[1])})`);
-
-    const circle = group.append('circle');
-
-    circle
-      .attr('cx', 0)
-      .attr('cy', 0)
-      .attr('r', d => d[2]);
-
-    const text = group.append('text');
-
-    text
-      .attr('x', d => (d[0] > extentX[1] / 2 ? -d[2] * 3 : d[2]))
-      .attr('y', 0)
-      .text(d => `[${d[0]},${d[1]}]`);
-
-    const groupAxisX = svg.append('g');
-
-    const xAxis = d3.axisBottom(scaleX);
-
-    groupAxisX
-      .attr('transform', `translate(0,${height - axisHeight})`)
-      .call(xAxis);
-
-    const groupAxisY = svg.append('g');
-
-    const yAxis = d3.axisRight(scaleY);
-
-    groupAxisY.call(yAxis);
+    u.attr('x', d => x(d.bedrooms))
+      .attr('y', d => y(d.quantity))
+      .attr('width', x.bandwidth())
+      .transition()
+      .duration(1000)
+      .attr('height', d => height - y(d.quantity))
+      .attr('fill', '#69b3a2');
   });
+};
+
+const createAxisX = (svg, data, width, height) => {
+  const x = d3
+    .scaleBand()
+    .domain(data.map(d => d.bedrooms))
+    .range([0, width])
+    .padding(0.2);
+
+  const xAxis = svg.append('g').attr('transform', `translate(0, ${height})`);
+  xAxis.call(d3.axisBottom(x));
+  return x;
+};
+
+const createAxisY = (svg, data, height) => {
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, d => d.quantity)])
+    .range([height, 0]);
+
+  const yAxis = svg.append('g').attr('class', 'myYaxis');
+  yAxis.call(d3.axisLeft(y));
+
+  return y;
 };
