@@ -45,7 +45,26 @@ body {
 #chart-data {
   height: 100%;
 }
-.legend {
+.axis-text {
+  fill: black;
   text-align: center;
+}
+#legend {
+  position: absolute;
+  z-index: 500;
+  left: 50;
+  top: 10;
+  fill: black;
+}
+#legend text {
   mix-blend-mode: difference;
+  fill: white;
+}
+.frame-1 {
+  stroke: black;
+  stroke-width: 1;
+}
+.text-center {
+  alignment-baseline: middle;
+  text-anchor: middle;
 }

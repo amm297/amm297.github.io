@@ -14,8 +14,9 @@ const boundries = 'resources/madrid.geojson';
 
 const center = [40.416775, -3.70379];
 
-const map = L.map('map').setView(center, 12);
+const map = L.map('map', { zoomControl: false }).setView(center, 12);
 
+L.control.zoom({ position: 'bottomright' }).addTo(map);
 L.tileLayer(provider, { attribution }).addTo(map);
 L.svg({ clickable: true }).addTo(map);
 
@@ -90,39 +91,42 @@ const updateChartTitle = (path, title) => {
 
 const printLegend = (svg, margins) => {
   const bounds = document.getElementById('map').getClientRects()[0];
-  const width = bounds.width / 3;
-  const legentHeight = 20;
+  const width = bounds.width / 2.8;
+  const legendHeight = 20;
   const numberOfLegends = 5;
 
   const step = (margins[1] - margins[0]) / numberOfLegends;
   const texts = [...Array(numberOfLegends).keys()].map(i => `< ${i * step}`);
 
-  const legend = svg
-    .append('g')
-    .attr('class', 'legend')
-    .attr('transform', `translate(0, ${bounds.height - legentHeight})`);
+  const legendContainer = d3
+    .select('#legend')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', legendHeight);
+
+  const legend = legendContainer.append('g').attr('class', 'legend');
 
   const scaleLegend = d3
     .scaleLinear()
     .domain([0, numberOfLegends])
     .range([0, width]);
 
-  for (let index = 0; index < numberOfLegends; index++) {
+  color.range().forEach((it, i) => {
     const legendGroup = legend
       .append('g')
-      .attr('transform', `translate(${scaleLegend(index)}, 0)`);
-
+      .attr('transform', `translate(${scaleLegend(i)}, 0)`);
     const legendcolor = legendGroup.append('rect');
     const widthRect = width / numberOfLegends - 2;
     legendcolor
       .attr('width', widthRect)
-      .attr('height', legentHeight)
-      .attr('fill', color(index));
+      .attr('height', legendHeight)
+      .attr('fill', it)
+      .attr('class', 'frame-1');
 
-    const legendtext = legendGroup.append('text');
+    const legendtext = legendGroup.append('text').attr('class', 'text-center');
     legendtext
-      .text(texts[index])
-      .attr('x', 2)
-      .attr('y', 15);
-  }
+      .text(texts[i])
+      .attr('x', widthRect / 2)
+      .attr('y', '50%');
+  });
 };

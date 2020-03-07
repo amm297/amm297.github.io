@@ -14,14 +14,19 @@ export const parseWithDelimiter = (fileName, returnClass) => {
   });
 };
 
-export const groupBy = (items, key) =>
-  items.reduce(
+export const groupBy = (items, key) => {
+  if (!hasValue(items)) {
+    return [];
+  }
+
+  return items.reduce(
     (result, item) => ({
       ...result,
       [item[key]]: [...(result[item[key]] || []), item]
     }),
     {}
   );
+};
 
 export const toNumber = val => {
   if (!hasValue(val)) {

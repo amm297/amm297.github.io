@@ -1,3 +1,4 @@
+import { hasValue } from './processor.js';
 import * as chart from './chart.js';
 
 export default chart;
@@ -6,9 +7,9 @@ export const printChart = data => {
   return new Promise((resolve, reject) => {
     console.log('print chart');
     console.log(data);
-    console.log(document.getElementById('chart-data').get)
+    console.log(document.getElementById('chart-data').get);
 
-    var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+    const margin = { top: 30, right: 30, bottom: 70, left: 60 },
       width = 560 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
@@ -21,6 +22,16 @@ export const printChart = data => {
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+    if (!hasValue(data) || data.length <= 0) {
+      console.log(data);
+      const text = svg.append('text').attr('class', 'text-center');
+      text
+        .text('Este barrio no dispone de datos. Prueba con otro :)')
+        .attr('x', '50%')
+        .attr('y', '50%');
+      resolve(true);
+    }
 
     const x = createAxisX(svg, data, width, height);
     const y = createAxisY(svg, data, height);
@@ -56,6 +67,10 @@ const createAxisX = (svg, data, width, height) => {
     .padding(0.2);
 
   const xAxis = svg.append('g').attr('transform', `translate(0, ${height})`);
+
+  const text = xAxis.append('text').attr('class', 'axis-text');
+  text.text('Nº habitaciones').attr('transform', `translate(${width / 2}, 30)`);
+
   xAxis.call(d3.axisBottom(x));
   return x;
 };
@@ -67,7 +82,15 @@ const createAxisY = (svg, data, height) => {
     .range([height, 0]);
 
   const yAxis = svg.append('g').attr('class', 'myYaxis');
-  yAxis.call(d3.axisLeft(y));
 
+  const text = yAxis.append('text').attr('class', 'axis-text');
+  text
+    .text('Nº apartamentos')
+    .attr(
+      'transform',
+      `translate(0, ${height / 2}) rotate(-90) translate(30, -30)`
+    );
+
+  yAxis.call(d3.axisLeft(y));
   return y;
 };

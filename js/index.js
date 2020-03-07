@@ -10,6 +10,7 @@ loadAccommodations().then(data => {
   printMap();
 
   eventEmitter.on('changeNeighborhood', neighborhood => {
+    console.log(accommodations)
     const acmmdtns = groupBy(accommodations[neighborhood], 'bedrooms');
     const data = Object.keys(acmmdtns)
       .filter(it => hasValue(it) && it.length > 0)
