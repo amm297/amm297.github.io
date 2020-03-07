@@ -5,12 +5,8 @@ body {
   min-height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #ffcc00;
 }
 @media (max-width: 400px) {
-  body {
-    background-color: #ffaaff;
-  }
 }
 #map {
   width: 100%;
@@ -18,29 +14,19 @@ body {
 }
 .grid-container {
   display: grid;
-  background-color: #2196f3;
   padding: 0;
   height: 100%;
-}
-@media (min-width: 400px) {
-  .grid-container {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-@media (max-width: 400px) {
-  .grid-container {
-    grid-template-rows: 1fr 1fr;
-  }
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 }
 .grid-item {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.8);
   text-align: center;
 }
+.grid-item-rowspan2 {
+  grid-row: 1 / span 2;
+}
 .grid-row {
-  display: grid;
-  background-color: rgba(255, 125, 255, 0.8);
-  grid-template-rows: 0.2fr 0.8fr;
+  grid-row: 1 / span 1;
 }
 .neighborhood {
   opacity: 0.6;
@@ -56,8 +42,10 @@ body {
   stroke-width: 2;
   z-index: 400;
 }
-.chart-bar {
-  fill: red;
-  stroke: black;
-  stroke-width: 1px;
+#chart-data {
+  height: 100%;
+}
+.legend {
+  text-align: center;
+  mix-blend-mode: difference;
 }

@@ -6,6 +6,7 @@ export const printChart = data => {
   return new Promise((resolve, reject) => {
     console.log('print chart');
     console.log(data);
+    console.log(document.getElementById('chart-data').get)
 
     var margin = { top: 30, right: 30, bottom: 70, left: 60 },
       width = 560 - margin.left - margin.right,
@@ -24,19 +25,26 @@ export const printChart = data => {
     const x = createAxisX(svg, data, width, height);
     const y = createAxisY(svg, data, height);
 
-    var u = svg
+    var rect = svg
       .selectAll('rect')
       .data(data)
       .enter()
       .append('rect');
 
-    u.attr('x', d => x(d.bedrooms))
-      .attr('y', d => y(d.quantity))
+    rect
+      .attr('x', d => x(d.bedrooms))
+      .attr('y', d => y(0))
       .attr('width', x.bandwidth())
-      .transition()
-      .duration(1000)
-      .attr('height', d => height - y(d.quantity))
+      .attr('height', d => height - y(0))
       .attr('fill', '#69b3a2');
+
+    svg
+      .selectAll('rect')
+      .transition()
+      .duration(800)
+      .attr('y', d => y(d.quantity))
+      .attr('height', d => height - y(d.quantity))
+      .delay((d, i) => i * 100);
   });
 };
 

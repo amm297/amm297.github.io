@@ -1,4 +1,4 @@
-import { color, changeOpacity } from './config.js';
+import { numberOfColors, legendScale, color, changeOpacity } from './config.js';
 import { eventEmitter } from './events.js';
 import { hasValue } from './processor.js';
 
@@ -60,7 +60,7 @@ export const printMap = () => {
       neighbourhood
         .attr('d', pathCreator)
         .attr('class', 'neighborhood')
-        .attr('fill', (d, i) => color(Math.ceil(d.properties.price) % 5));
+        .attr('fill', (d, i) => color(d.properties.price));
 
       const onZoom = () => neighbourhood.attr('d', pathCreator);
       const onMove = () => neighbourhood.attr('d', pathCreator);
@@ -68,6 +68,10 @@ export const printMap = () => {
       onZoom();
       map.on('zoomend', onZoom);
       map.on('moveend', onMove);
+
+      const margins = d3.extent(data.features, d => d.properties.price);
+      printLegend(svg, margins);
+
       resolve(true);
     });
   });
@@ -82,4 +86,43 @@ const updateChartTitle = (path, title) => {
   d3.select(path).classed('neighborhood-selected', true);
   lastPath = path;
   document.getElementById('chart-title').innerText = title;
+};
+
+const printLegend = (svg, margins) => {
+  const bounds = document.getElementById('map').getClientRects()[0];
+  const width = bounds.width / 3;
+  const legentHeight = 20;
+  const numberOfLegends = 5;
+
+  const step = (margins[1] - margins[0]) / numberOfLegends;
+  const texts = [...Array(numberOfLegends).keys()].map(i => `< ${i * step}`);
+
+  const legend = svg
+    .append('g')
+    .attr('class', 'legend')
+    .attr('transform', `translate(0, ${bounds.height - legentHeight})`);
+
+  const scaleLegend = d3
+    .scaleLinear()
+    .domain([0, numberOfLegends])
+    .range([0, width]);
+
+  for (let index = 0; index < numberOfLegends; index++) {
+    const legendGroup = legend
+      .append('g')
+      .attr('transform', `translate(${scaleLegend(index)}, 0)`);
+
+    const legendcolor = legendGroup.append('rect');
+    const widthRect = width / numberOfLegends - 2;
+    legendcolor
+      .attr('width', widthRect)
+      .attr('height', legentHeight)
+      .attr('fill', color(index));
+
+    const legendtext = legendGroup.append('text');
+    legendtext
+      .text(texts[index])
+      .attr('x', 2)
+      .attr('y', 15);
+  }
 };
