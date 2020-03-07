@@ -7,10 +7,12 @@ import ChartAccommodation from './domain/chart-accommodation.js';
 
 loadAccommodations().then(data => {
   const accommodations = data;
-  printMap();
+  printMap().then(() => {
+    const loadingLayer = document.getElementById('loading');
+    loadingLayer.classList.add('hide');
+  });
 
   eventEmitter.on('changeNeighborhood', neighborhood => {
-    console.log(accommodations)
     const acmmdtns = groupBy(accommodations[neighborhood], 'bedrooms');
     const data = Object.keys(acmmdtns)
       .filter(it => hasValue(it) && it.length > 0)

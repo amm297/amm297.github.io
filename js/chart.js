@@ -5,10 +5,6 @@ export default chart;
 
 export const printChart = data => {
   return new Promise((resolve, reject) => {
-    console.log('print chart');
-    console.log(data);
-    console.log(document.getElementById('chart-data').get);
-
     const margin = { top: 30, right: 30, bottom: 70, left: 60 },
       width = 560 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
@@ -24,7 +20,6 @@ export const printChart = data => {
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
     if (!hasValue(data) || data.length <= 0) {
-      console.log(data);
       const text = svg.append('text').attr('class', 'text-center');
       text
         .text('Este barrio no dispone de datos. Prueba con otro :)')
@@ -47,7 +42,7 @@ export const printChart = data => {
       .attr('y', d => y(0))
       .attr('width', x.bandwidth())
       .attr('height', d => height - y(0))
-      .attr('fill', '#69b3a2');
+      .attr('class', 'chart-bar');
 
     svg
       .selectAll('rect')
